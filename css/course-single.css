@@ -1,0 +1,516 @@
+/* Hero Section */
+.course-hero {
+    background-color: #0a1a2a;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 80px 0;
+    position: relative;
+    color: #fff;
+}
+
+.course-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 26, 42, 0.7);
+}
+
+.course-hero .container {
+    position: relative;
+    z-index: 1;
+}
+
+.course-hero h1 {
+    font-size: 62px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.course-subtitle {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+}
+
+/* Course Tabs */
+.course-tabs {
+    margin-top: 20px;
+    margin-bottom: 30px;
+    background-color: #fff;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.nav-tabs {
+    border-bottom: 1px solid #dee2e6;
+    background-color: #fff;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-radius: 0;
+    padding: 15px 20px;
+    font-weight: 600;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #00a651;
+}
+
+.nav-tabs .nav-link.active {
+    color: #fff;
+    background-color: #00a651;
+    border-bottom: none;
+}
+
+.tab-content {
+    padding: 20px;
+}
+
+/* Ratings Section */
+.ratings-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+.rating-box {
+    text-align: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    width: 48%;
+}
+
+.rating-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: #00a651;
+}
+
+.rating-stars {
+    color: #ffc107;
+    margin: 5px 0;
+}
+
+.rating-label {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Course Info Boxes */
+.course-info-boxes {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+    gap: 15px;
+}
+
+.info-box {
+    flex: 1;
+    min-width: 200px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.info-box h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.info-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-box ul li {
+    padding: 3px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Course Description */
+.course-description h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.description-content {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #666;
+}
+
+/* Curriculum Section */
+.curriculum-section {
+    margin-top: 30px;
+}
+
+.curriculum-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.curriculum-icon {
+    width: 24px;
+    height: 24px;
+    background-color: #00a651;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: white;
+    font-size: 12px;
+}
+
+.curriculum-title {
+    font-weight: 600;
+    color: #333;
+    font-size: 16px;
+}
+
+/* Specialization Section */
+.specialization-section {
+    margin: 40px 0;
+    padding: 0;
+}
+
+.specialization-section h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.specialization-section > p {
+    font-size: 15px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.specialization-info {
+    background-color: #fff;
+    padding: 0;
+}
+
+.specialization-info p {
+    margin-bottom: 15px;
+    font-size: 15px;
+    color: #666;
+}
+
+.specialization-info h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 20px 0 10px;
+    color: #333;
+}
+
+.specialization-info ul {
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+.specialization-info ul li {
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #666;
+}
+
+.specialization-info ul li strong {
+    color: #333;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+    margin: 40px 0;
+    padding: 0;
+}
+
+.testimonials-section h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.testimonial-card {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    height: 100%;
+}
+
+.student-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.student-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.student-info h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.company-logo img {
+    height: 20px;
+    width: auto;
+}
+
+.testimonial-text {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Instructor Profile */
+.instructor-profile {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 30px;
+}
+
+.instructor-profile h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.instructor-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.instructor-info img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.instructor-info h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.instructor-title {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+/* Other Courses Section */
+.other-courses {
+    padding: 40px 0;
+    background-color: #f9f9f9;
+}
+
+.other-courses h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: #333;
+    text-align: center;
+}
+
+.course-card {
+    background-color: #fff;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.course-image {
+    height: 180px;
+    overflow: hidden;
+}
+
+.course-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.course-card:hover .course-image img {
+    transform: scale(1.05);
+}
+
+.course-content {
+    padding: 15px;
+}
+
+.course-content h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+    height: 40px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.course-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.btn-brochure, .btn-view-program {
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 3px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-brochure {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.btn-brochure:hover {
+    background-color: #e9e9e9;
+}
+
+.btn-view-program {
+    background-color: #00a651;
+    color: #fff;
+}
+
+.btn-view-program:hover {
+    background-color: #008c44;
+}
+
+/* Certificate Section */
+.certificate-section {
+    padding: 40px 0;
+    background-color: #fff;
+}
+
+.certificate-section h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.certificate-section p {
+    font-size: 15px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+/* Responsive Styles */
+@media (max-width: 991px) {
+    .course-info-boxes {
+        flex-direction: column;
+    }
+    
+    .info-box {
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 767px) {
+    .course-hero {
+        padding: 40px 0;
+    }
+    
+    .course-hero h1 {
+        font-size: 32px;
+    }
+    
+    .course-subtitle {
+        font-size: 16px;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    
+    .ratings-container {
+        flex-direction: column;
+    }
+    
+    .rating-box {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    
+    .curriculum-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .curriculum-icon {
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 575px) {
+    .course-hero h1 {
+        font-size: 28px;
+    }
+    
+    .course-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn-brochure, .btn-view-program {
+        width: 100%;
+        text-align: center;
+    }
+}
