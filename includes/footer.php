@@ -4,7 +4,7 @@
     .site-footer {
         background-color: #0c0c14;
         color: #fff;
-        padding: 0;
+        padding: 0 !important;
         font-family: 'Arial', sans-serif;
     }
     
@@ -86,7 +86,10 @@
     }
     
     .social-icon i {
-        font-size: 28px;
+        font-size: 220%;
+        border-radius: 50%;
+        /* padding:none; */
+        /* margin:0; */
         color: #fff;
     }
     
@@ -279,32 +282,38 @@
                     
                     <div class="social-icons">
                         <a href="<?php echo !empty($site_settings['facebook_url']) ? htmlspecialchars($site_settings['facebook_url']) : '#'; ?>" class="social-icon">
-                            <span class="icon-container facebook-icon"><i class="fab fa-facebook-f"></i></span>
+                            <span class="icon-container facebook-icon">
+                                <i class="fab fa-facebook-f facebook-icon"></i></span>
                             <span>Facebook</span>
                         </a>
                         
                         <a href="<?php echo !empty($site_settings['twitter_url']) ? htmlspecialchars($site_settings['twitter_url']) : '#'; ?>" class="social-icon">
-                            <span class="icon-container twitter-icon"><i class="fab fa-twitter"></i></span>
+                            <span class="icon-container twitter-icon">
+                                <i class="fab fa-x twitter-icon"></i></span>
                             <span>X</span>
                         </a>
                         
                         <a href="<?php echo !empty($site_settings['youtube_url']) ? htmlspecialchars($site_settings['youtube_url']) : '#'; ?>" class="social-icon">
-                            <span class="icon-container youtube-icon"><i class="fab fa-youtube"></i></span>
+                            <span class="icon-container youtube-icon">
+                                <i class="fab fa-youtube youtube-icon"></i></span>
                             <span>Youtube</span>
                         </a>
                         
                         <a href="<?php echo !empty($site_settings['instagram_url']) ? htmlspecialchars($site_settings['instagram_url']) : '#'; ?>" class="social-icon">
-                            <span class="icon-container instagram-icon"><i class="fab fa-instagram"></i></span>
+                            <span class="icon-container instagram-icon">
+                                <i class="fab fa-instagram instagram-icon"></i></span>
                             <span>Instagram</span>
                         </a>
                         
                         <a href="<?php echo !empty($site_settings['linkedin_url']) ? htmlspecialchars($site_settings['linkedin_url']) : '#'; ?>" class="social-icon">
-                            <span class="icon-container linkedin-icon"><i class="fab fa-linkedin-in"></i></span>
+                            <span class="icon-container linkedin-icon">
+                                <i class="fab fa-linkedin-in linkedin-icon"></i></span>
                             <span>Linkedin</span>
                         </a>
                         
-                        <a href="<?php echo !empty($site_settings['whatsapp_url']) ? htmlspecialchars($site_settings['whatsapp_url']) : '#'; ?>" class="social-icon">
-                            <span class="icon-container whatsapp-icon"><i class="fab fa-whatsapp"></i></span>
+                         <a href="https://wa.me/<?php echo !empty($site_settings['contact_phone']) ? preg_replace('/[^0-9]/', '', $site_settings['contact_phone']) : ''; ?>" class="social-icon" target="_blank">
+                            <span class="icon-container whatsapp-icon">
+                                <i class="fab fa-whatsapp whatsapp-icon"></i></span>
                             <span>Whatsapp</span>
                         </a>
                     </div>
@@ -367,43 +376,58 @@
                     <img src="<?php echo !empty($site_settings['footer_image']) ? htmlspecialchars($site_settings['footer_image']) : 'images/tech-person.jpg'; ?>" alt="Technology" class="footer-image">
                 </div>
                 
-                <div class="col-md-3">
-                    <h3>Courses</h3>
-                    <div class="course-item">
-                        <a href="#">AIFS-CDEC AI Powered Full Stack with Cloud Devops Engineering Course</a>
-                    </div>
-                    <div class="course-item">
-                        <a href="#">CDEC- Cloud Devops Engineering Course</a>
-                    </div>
-                    <div class="course-item">
-                        <a href="#">X-DSAAI Expert in data science with ai</a>
-                    </div>
-                    <div class="course-item">
-                        <a href="#">X-DMAI Expert in Digital Marketing With AI</a>
-                    </div>
-                </div>
-                
-                <div class="col-md-3">
+            <div class="col-md-3">
+    <h3>Courses</h3>
+    <?php
+    // Make sure $conn is included or globally available
+    include_once __DIR__ . '/../includes/db_connect.php'; // adjust this path as needed
+
+    $query = "SELECT title, slug FROM courses WHERE status = 'published' ORDER BY created_at DESC LIMIT 4";
+    $stmt = $conn->query($query);
+
+    if ($stmt && $stmt->rowCount() > 0):
+        while ($course = $stmt->fetch(PDO::FETCH_ASSOC)):
+            $course_title = htmlspecialchars($course['title']);
+            $course_url = '/course/' . urlencode($course['slug']); // adjust as needed
+    ?>
+        <div class="course-item">
+            <a href="<?php echo $course_url; ?>"><?php echo $course_title; ?></a>
+        </div>
+    <?php
+        endwhile;
+    else:
+        echo "<p>No courses found.</p>";
+    endif;
+    ?>
+</div>
+            
+<?php
+$base_url = ''; // Define the base URL for your site
+?>                <div class="col-md-2">
                     <h3>Cloudblitz</h3>
                     <div class="cloudblitz-item">
-                        <a href="#">Home</a>
+                        <a href="<?php echo $base_url; ?>index.php">Home</a>
                     </div>
                     <div class="cloudblitz-item">
-                        <a href="#">About Us</a>
+                       <a href="<?php echo $base_url; ?>about.php">About</a>
                     </div>
                     <div class="cloudblitz-item">
-                        <a href="#">Courses</a>
+                        <a href="<?php echo $base_url; ?>courses.php">Courses</a>
                     </div>
                     <div class="cloudblitz-item">
-                        <a href="#">Blogs</a>
+                    <a href="<?php echo $base_url; ?>blogs.php">Blogs</a>
                     </div>
                     <div class="cloudblitz-item">
-                        <a href="#">Success Stories</a>
+                        <a href="<?php echo $base_url; ?>careers.php">Careers</a>
                     </div>
+                     <div class="cloudblitz-item">
+                    <a href="<?php echo $base_url; ?>contact.php">Contact Us</a>
+                    </div>
+                 
                 </div>
                 
                 <div class="col-md-3">
-                    <a href="./admin/index.php" class="view-more-btn">ADMIN LOGIN</a>
+                    <a href="<?php echo $base_url; ?>./admin/index.php" class="view-more-btn">ADMIN LOGIN</a>
                 </div>
             </div>
         </div>

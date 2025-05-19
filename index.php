@@ -49,10 +49,14 @@ $recentPosts = $stmt->fetchAll();
             <a href="contact.php" class="btn btn-outline">Contact Us</a>
           </div>
           
-          <div class="partner-logo">
-            <p>Trusted By</p>
-            <img src="images/company-logo0.svg" alt="Microsoft" onerror="this.src='https://via.placeholder.com/120x30?text=Microsoft'">
-          </div>
+            <div class="partner-logo" style="width: 100%;"></div>
+            <div class="partner-content" style="position: relative; display: flex; align-items: right; justify-content: right; margin: 20px 0;">
+              <div style="width: 0; height: 0; border-top: 25px solid transparent; border-bottom: 25px solid transparent; border-right: 25px solid #ff6b00;"></div>
+              <div style="display: flex; align-items: center; background: #ff6b00; padding: 10px 30px; border-radius: 0 5px 5px 0;">
+              <span class="partner-text" style="color: white; margin-right: 10px;">We are official partners with</span>
+              <img src="images/company-logo0.svg" alt="Microsoft" style="height: 30px;" onerror="this.src='https://via.placeholder.com/120x30?text=Microsoft'">
+              </div>
+            </div>
         </div>
       </div>
       <div class="col-lg-6">

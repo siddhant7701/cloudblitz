@@ -1,25 +1,33 @@
 <?php
-// Include database connection
-require_once '../includes/db_connect.php';
-
-// Check if admin is logged in
+// Start the session
 session_start();
-if (!isset($_SESSION['admin_id'])) {
-    header('Location: index.php');
+
+// Check if user is logged in
+if (!isset($_SESSION['admin_id']) || empty($_SESSION['admin_id'])) {
+    header("Location: login.php");
     exit;
 }
 
+// Include database connection
+include('../includes/db_connect.php');
+
+// Initialize variables
+$name = '';
+$email = '';
+$title = '';
+$bio = '';
 $errors = [];
-$success = false;
+$success_message = '';
 
 // Process form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validate inputs
-    $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $title = trim($_POST['title'] ?? '');
-    $bio = trim($_POST['bio'] ?? '');
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get form data
+    $name = trim($_POST['name']);
+    $email = trim($_POST['email']);
+    $title = trim($_POST['title']);
+    $bio = trim($_POST['bio']);
     
+    // Validate form data
     if (empty($name)) {
         $errors[] = "Name is required";
     }
@@ -28,160 +36,389 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Email is required";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format";
+    } else {
+        // Check if email already exists
+        $stmt = $conn->prepare("SELECT id FROM instructors WHERE email = ?");
+        $stmt->execute([$email]);
+        if ($stmt->rowCount() > 0) {
+            $errors[] = "Email already exists";
+        }
     }
     
-    // Check if email already exists
-    $stmt = $conn->prepare("SELECT id FROM instructors WHERE email = ?");
-    $stmt->bindValue(1, $email, PDO::PARAM_STR);
-    $stmt->execute();
-    if ($stmt->rowCount() > 0) {
-        $errors[] = "Email already exists";
+    if (empty($title)) {
+        $errors[] = "Title is required";
     }
     
-    // Process image upload if provided
+    // Process image upload if there are no errors
     $image_path = '';
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+    if (empty($errors) && isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-        $file_type = $_FILES['image']['type'];
+        $max_size = 2 * 1024 * 1024; // 2MB
         
-        if (!in_array($file_type, $allowed_types)) {
-            $errors[] = "Invalid file type. Only JPG, PNG, and GIF are allowed.";
+        if (!in_array($_FILES['image']['type'], $allowed_types)) {
+            $errors[] = "Only JPG, PNG and GIF images are allowed";
+        } elseif ($_FILES['image']['size'] > $max_size) {
+            $errors[] = "Image size should be less than 2MB";
         } else {
-            $upload_dir = '../uploads/instructors/';
-            
-            // Create directory if it doesn't exist
+            // Create upload directory if it doesn't exist
+            $upload_dir = "../uploads/instructors/";
             if (!file_exists($upload_dir)) {
                 mkdir($upload_dir, 0777, true);
             }
             
-            $file_name = time() . '_' . basename($_FILES['image']['name']);
-            $target_file = $upload_dir . $file_name;
+            // Generate unique filename
+            $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $filename = uniqid() . '.' . $file_extension;
+            $target_file = $upload_dir . $filename;
             
+            // Upload file
             if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-                $image_path = 'uploads/instructors/' . $file_name;
+                $image_path = $filename;
             } else {
                 $errors[] = "Failed to upload image";
             }
         }
     }
     
-    // If no errors, insert into database
+    // Insert data into database if there are no errors
     if (empty($errors)) {
-        $stmt = $conn->prepare("INSERT INTO instructors (name, email, title, bio, image_path) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bindValue(1, $name, PDO::PARAM_STR);
-        $stmt->bindValue(2, $email, PDO::PARAM_STR);
-        $stmt->bindValue(3, $title, PDO::PARAM_STR);
-        $stmt->bindValue(4, $bio, PDO::PARAM_STR);
-        $stmt->bindValue(5, $image_path, PDO::PARAM_STR);
-        
-        if ($stmt->execute()) {
-            $success = true;
-        } else {
-            $errors[] = "Database error: " . implode(", ", $stmt->errorInfo());
+        try {
+            $stmt = $conn->prepare("
+                INSERT INTO instructors (name, email, title, bio, image_path) 
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            
+            $result = $stmt->execute([$name, $email, $title, $bio, $image_path]);
+            
+            if ($result) {
+                $success_message = "Instructor added successfully!";
+                // Clear form data
+                $name = '';
+                $email = '';
+                $title = '';
+                $bio = '';
+            } else {
+                $errors[] = "Failed to add instructor";
+            }
+        } catch (PDOException $e) {
+            $errors[] = "Database error: " . $e->getMessage();
         }
     }
 }
-
-// Set page title
-$page_title = "Add Instructor";
-include 'includes/navbar.php';
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Instructor - CloudBlitz Admin</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary: #ff7700;
+            --primary-light: #ff9933;
+            --primary-dark: #e66000;
+            --secondary: #333333;
+            --secondary-light: #555555;
+            --secondary-dark: #222222;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --gray: #e0e0e0;
+            --dark-gray: #888888;
+            --danger: #dc3545;
+            --success: #28a745;
+            --warning: #ffc107;
+            --info: #17a2b8;
+        }
 
-<div class="container-fluid">
-    <div class="row">
-        <?php include 'includes/sidebar.php'; ?>
-        
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Add New Instructor</h1>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <a href="instructors.php" class="btn btn-sm btn-outline-secondary">
-                        <i class="fas fa-arrow-left"></i> Back to Instructors
+        /* Base Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fc;
+            overflow-x: hidden;
+        }
+
+        .wrapper {
+            display: flex;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        /* Sidebar */
+        #sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background: var(--secondary-dark);
+            color: #fff;
+            transition: all 0.3s;
+            height: 100vh;
+            position: fixed;
+            z-index: 999;
+        }
+
+        #sidebar.active {
+            margin-left: -250px;
+        }
+
+        #sidebar .sidebar-header {
+            padding: 20px;
+            background: #1a1a1a;
+        }
+
+        #sidebar .sidebar-header h3 {
+            color: #fff;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        #sidebar .sidebar-header h3 span {
+            color: var(--primary);
+        }
+
+        #sidebar ul.components {
+            padding: 20px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        #sidebar ul li a {
+            padding: 12px 20px;
+            font-size: 1.1em;
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        #sidebar ul li a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        #sidebar ul li a:hover {
+            color: var(--primary);
+            background: #2c2c2c;
+        }
+
+        #sidebar ul li.active > a {
+            color: #fff;
+            background: var(--primary);
+        }
+
+        /* Content */
+        #content {
+            width: calc(100% - 250px);
+            min-height: 100vh;
+            transition: all 0.3s;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        #content.active {
+            width: 100%;
+        }
+
+        /* Navbar */
+        .navbar {
+            padding: 15px 10px;
+            background: #fff;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 30px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        /* Cards */
+        .card {
+            margin-bottom: 24px;
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+        }
+
+        .card-header h6 {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        /* Form Styles */
+        .form-control:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 0.2rem rgba(255, 119, 0, 0.25);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #sidebar {
+                margin-left: -250px;
+            }
+            #sidebar.active {
+                margin-left: 0;
+            }
+            #content {
+                width: 100%;
+            }
+            #content.active {
+                width: calc(100% - 250px);
+            }
+            #sidebarCollapse span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <?php include('includes/sidebar.php'); ?>
+
+        <!-- Page Content -->
+        <div id="content">
+            <!-- Navbar -->
+            <?php include('includes/navbar.php'); ?>
+
+            <!-- Main Content -->
+            <div class="container-fluid px-4">
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">Add New Instructor</h1>
+                    <a href="instructors.php" class="d-none d-sm-inline-block btn btn-secondary shadow-sm">
+                        <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Instructors
                     </a>
                 </div>
-            </div>
-            
-            <?php if ($success): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    Instructor added successfully.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                <p><a href="instructors.php" class="btn btn-primary">Back to Instructors List</a></p>
-            <?php else: ?>
+
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="instructors.php">Instructors</a></li>
+                    <li class="breadcrumb-item active">Add New</li>
+                </ol>
+                
                 <?php if (!empty($errors)): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <ul class="mb-0">
+                        <strong>Error!</strong>
+                        <ul>
                             <?php foreach ($errors as $error): ?>
-                                <li><?php echo htmlspecialchars($error); ?></li>
+                                <li><?php echo $error; ?></li>
                             <?php endforeach; ?>
                         </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                 <?php endif; ?>
                 
-                <form action="add-instructor.php" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="name" name="name" required 
-                                   value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>">
-                            <div class="invalid-feedback">Name is required</div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" id="email" name="email" required 
-                                   value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>">
-                            <div class="invalid-feedback">Valid email is required</div>
-                        </div>
+                <?php if (!empty($success_message)): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?php echo $success_message; ?>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="title" class="form-label">Title/Position</label>
-                            <input type="text" class="form-control" id="title" name="title" 
-                                   value="<?php echo htmlspecialchars($_POST['title'] ?? ''); ?>">
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label for="image" class="form-label">Profile Image</label>
-                            <input type="file" class="form-control" id="image" name="image">
-                            <div class="form-text">Upload a square image for best results. Max size: 2MB</div>
-                        </div>
+                <?php endif; ?>
+                
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Instructor Information</h6>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="bio" class="form-label">Biography</label>
-                        <textarea class="form-control" id="bio" name="bio" rows="5"><?php echo htmlspecialchars($_POST['bio'] ?? ''); ?></textarea>
+                    <div class="card-body">
+                        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="name">Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($name); ?>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email">Email <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="title">Title/Position <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="title" name="title" value="<?php echo htmlspecialchars($title); ?>" required>
+                                <small class="form-text text-muted">E.g., "Frontend Developer", "Data Science Expert", "Marketing Specialist"</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bio">Bio/Description</label>
+                                <textarea class="form-control" id="bio" name="bio" rows="5"><?php echo htmlspecialchars($bio); ?></textarea>
+                                <small class="form-text text-muted">Provide a brief description of the instructor's background, expertise, and experience.</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="image">Profile Image</label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="image" name="image">
+                                    <label class="custom-file-label" for="image">Choose file</label>
+                                </div>
+                                <small class="form-text text-muted">Recommended image size: 300x300 pixels. Max file size: 2MB. Formats: JPG, PNG, GIF.</small>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save mr-1"></i> Save Instructor
+                                </button>
+                                <a href="instructors.php" class="btn btn-secondary ml-2">
+                                    <i class="fas fa-times mr-1"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                    
-                    <div class="mb-3">
-                        <button type="submit" class="btn btn-primary">Add Instructor</button>
-                        <a href="instructors.php" class="btn btn-secondary">Cancel</a>
-                    </div>
-                </form>
-            <?php endif; ?>
-        </main>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
-// Form validation
-(function() {
-    'use strict';
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     
-    var forms = document.querySelectorAll('.needs-validation');
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     
-    Array.prototype.slice.call(forms).forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
+    <script>
+        $(document).ready(function() {
+            // Toggle sidebar
+            $('#sidebarCollapse').on('click', function() {
+                $('#sidebar, #content').toggleClass('active');
+            });
             
-            form.classList.add('was-validated');
-        }, false);
-    });
-})();
-</script>
-
+            // Show filename when file is selected
+            $(".custom-file-input").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            });
+        });
+    </script>
+</body>
+</html>

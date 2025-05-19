@@ -28,8 +28,10 @@ $menu_items = $stmt->fetchAll();
     <title><?php echo isset($page_title) ? htmlspecialchars($page_title) . ' - ' : ''; ?><?php echo htmlspecialchars($site_settings['site_name']); ?></title>
     <meta name="description" content="<?php echo htmlspecialchars($site_settings['site_description']); ?>">
     
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="<?php echo htmlspecialchars($site_settings['favicon_path']); ?>" type="image/x-icon">
+    <!-- Favicon - FIXED to include images directory -->
+    <?php if(!empty($site_settings['favicon_path'])): ?>
+        <link rel="shortcut icon" href="images/<?php echo htmlspecialchars($site_settings['favicon_path']); ?>" type="image/x-icon">
+    <?php endif; ?>
     
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -66,11 +68,12 @@ $menu_items = $stmt->fetchAll();
             z-index: 1000;
             top: 0;
             left: 0;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.6); /* Transparent background */
             overflow-x: hidden;
             transition: 0.3s;
             padding-top: 60px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+            border-right: 1px solid rgba(0,0,0,0.05);
         }
         
         .sidebar.open {
@@ -140,7 +143,7 @@ $menu_items = $stmt->fetchAll();
         }
         
         .sidebar-header img {
-            max-width: 150px;
+            max-width: 350px;
             height: auto;
         }
         
@@ -151,12 +154,12 @@ $menu_items = $stmt->fetchAll();
             left: 20px;
             z-index: 1050;
             cursor: pointer;
-            background-color: #ff5722;
-            color: #ffffff;
+            background-color:rgba(246, 246, 246, 0.5);
+            color: #ff5722 !important;
             border: none;
-            border-radius: 50%;
+            border-radius: 100px; /* More rectangular shape as in image */
             width: 45px;
-            height: 45px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -165,29 +168,30 @@ $menu_items = $stmt->fetchAll();
         }
         
         .menu-toggle:hover {
-            background-color: #e64a19;
+            background-color:rgba(146, 146, 146, 0.56);
             transform: scale(1.05);
         }
         
         .menu-toggle i {
             font-size: 20px;
-            color: #ffffff;
+            color: #ff5722;
         }
         
         /* Logo positioning */
         .navbar-brand {
-            margin-left: 60px;
+            margin-left: 70px;
             transition: margin-left 0.3s ease;
         }
         
         /* Top bar with contact info and social links */
         .top-bar {
-            background-color: #f8f9fa;
+            background-color: rgba(248, 249, 250, 0.9);
             padding: 10px 0;
             color: #333;
             position: relative;
             z-index: 99;
             border-bottom: 1px solid rgba(0,0,0,0.05);
+            backdrop-filter: blur(5px);
         }
         
         .top-bar a {
@@ -218,78 +222,50 @@ $menu_items = $stmt->fetchAll();
             color: #ff5722;
         }
         
-        .social-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        /* Fixed social media sidebar */
+        .social-links-sidebar {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(248, 249, 250, 0.8);
+            padding: 15px 10px;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            z-index: 999;
             display: flex;
-            justify-content: flex-end;
+            flex-direction: column;
+            align-items: center;
         }
         
-        .social-links li {
-            margin-left: 15px;
-        }
-        
-        .social-links a {
-            display: inline-block;
-            width: 32px;
-            height: 32px;
-            background-color: rgba(255, 87, 34, 0.1);
+        .social-links-sidebar a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            margin: 5px 0;
             border-radius: 50%;
-            text-align: center;
-            line-height: 32px;
+            background-color: #ff5722;
+            color: #fff;
+            font-size: 18px;
             transition: all 0.3s ease;
-            color: #ff5722;
         }
         
-        .social-links a:hover {
-            background-color: #ff5722;
-            color: #ffffff;
+        .social-links-sidebar a:hover {
             transform: translateY(-3px);
+            background-color: #e64a19;
         }
         
         /* Main navbar modifications */
         .navbar {
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.9); /* Transparent background */
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             padding: 15px 0;
             transition: all 0.3s ease;
             position: relative;
-        }
-        
-        /* Social links visibility control */
-        .social-links-container {
-            position: fixed;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 990;
-            display: flex;
-            flex-direction: column;
-            transition: opacity 0.3s ease;
-        }
-        
-        .social-links-container .social-links {
-            flex-direction: column;
-        }
-        
-        .social-links-container .social-links li {
-            margin: 5px 0;
-        }
-        
-        .hide-social {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        /* Sidebar section titles */
-        .sidebar-section-title {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #999;
-            padding: 10px 25px;
-            margin-top: 15px;
+            backdrop-filter: blur(5px);
         }
         
         /* For mobile devices */
@@ -298,17 +274,14 @@ $menu_items = $stmt->fetchAll();
                 margin-left: 70px;
             }
             
-            .social-links-container {
-                display: none;
+            .social-links-sidebar {
+                padding: 10px 5px;
             }
             
-            .contact-info {
-                justify-content: center;
-                margin-bottom: 10px;
-            }
-            
-            .social-links {
-                justify-content: center;
+            .social-links-sidebar a {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
             }
             
             .sidebar {
@@ -323,7 +296,7 @@ $menu_items = $stmt->fetchAll();
                 top: 15px;
                 left: 15px;
                 width: 40px;
-                height: 40px;
+                height: 35px;
             }
         }
     </style>
@@ -345,15 +318,32 @@ $menu_items = $stmt->fetchAll();
         <i class="fas fa-bars"></i>
     </button>
     
+    <!-- Social Media Sidebar -->
+    <div class="social-links-sidebar">
+        <a href="<?php echo !empty($site_settings['facebook_url']) ? htmlspecialchars($site_settings['facebook_url']) : '#'; ?>" >
+        <i class="fab fa-facebook-f"></i></a>
+        <a href="<?php echo !empty($site_settings['instagram_url']) ? htmlspecialchars($site_settings['instagram_url']) : '#'; ?>">
+        <i class="fab fa-instagram"></i></a>
+        <a href="<?php echo !empty($site_settings['youtube_url']) ? htmlspecialchars($site_settings['youtube_url']) : '#'; ?>">                
+        <i class="fab fa-youtube"></i></a>
+        <a href="<?php echo !empty($site_settings['linkedin_url']) ? htmlspecialchars($site_settings['linkedin_url']) : '#'; ?>">
+        <i class="fab fa-linkedin-in"></i></a>
+        <a href="https://wa.me/<?php echo !empty($site_settings['contact_phone']) ? preg_replace('/[^0-9]/', '', $site_settings['contact_phone']) : ''; ?>" class="whatsapp" target="_blank">
+        <i class="fab fa-whatsapp"></i></a>
+    </div>
+    
     <!-- Sidebar Navigation -->
     <div class="sidebar" id="sidebar">
-        <span class="close-btn" onclick="toggleSidebar()"><i class="fas fa-times"></i></span>
+        <!-- <span class="close-btn" onclick="toggleSidebar()"><i class="fas fa-times"></i></span> -->
+        <br>
+        <!-- <div class="sidebar-header">
+            <?php if(!empty($site_settings['logo_path'])): ?>
+                <img src="images/<?php echo htmlspecialchars($site_settings['logo_path']); ?>" alt="<?php echo htmlspecialchars($site_settings['site_name']); ?>">
+            <?php else: ?>
+                <?php echo htmlspecialchars($site_settings['site_name']); ?>
+            <?php endif; ?>
+        </div> -->
         
-        <div class="sidebar-header">
-            <img src="images/logo.png" alt="<?php echo htmlspecialchars($site_settings['site_name']); ?>">
-        </div>
-        
-        <div class="sidebar-section-title">Main Navigation</div>
         <ul class="navbar-nav">
             <li class="nav-item <?php echo $current_page === 'index.php' ? 'active' : ''; ?>">
                 <a class="nav-link" href="index.php"><i class="fas fa-home"></i> Home</a>
@@ -364,63 +354,31 @@ $menu_items = $stmt->fetchAll();
             <li class="nav-item <?php echo $current_page === 'blogs.php' ? 'active' : ''; ?>">
                 <a class="nav-link" href="blogs.php"><i class="fas fa-blog"></i> Blog</a>
             </li>
+             <li class="nav-item <?php echo $current_page === 'careers.php' ? 'active' : ''; ?>">
+                <a class="nav-link" href="careers.php"><i class="fas fa-briefcase"></i> Career</a>
+            </li>
             <li class="nav-item <?php echo $current_page === 'about.php' ? 'active' : ''; ?>">
                 <a class="nav-link" href="about.php"><i class="fas fa-info-circle"></i> About Us</a>
             </li>
+           
             <li class="nav-item <?php echo $current_page === 'contact.php' ? 'active' : ''; ?>">
                 <a class="nav-link" href="contact.php"><i class="fas fa-envelope"></i> Contact</a>
             </li>
-            
-           
         </ul>
-        </div>
+    </div>
     
     <!-- Header -->
     <header class="site-header">
-        <!-- <div class="top-bar">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="contact-info">
-                            <?php if (!empty($site_settings['contact_email'])): ?>
-                            <li><i class="fa fa-envelope"></i> <a href="mailto:<?php echo htmlspecialchars($site_settings['contact_email']); ?>"><?php echo htmlspecialchars($site_settings['contact_email']); ?></a></li>
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($site_settings['contact_phone'])): ?>
-                            <li><i class="fa fa-phone"></i> <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $site_settings['contact_phone'])); ?>"><?php echo htmlspecialchars($site_settings['contact_phone']); ?></a></li>
-                            <?php endif; ?>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <ul class="social-links">
-                            <?php if (!empty($site_settings['facebook_url'])): ?>
-                            <li><a href="<?php echo htmlspecialchars($site_settings['facebook_url']); ?>" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($site_settings['twitter_url'])): ?>
-                            <li><a href="<?php echo htmlspecialchars($site_settings['twitter_url']); ?>" target="_blank"><i class="fab fa-twitter"></i></a></li>
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($site_settings['instagram_url'])): ?>
-                            <li><a href="<?php echo htmlspecialchars($site_settings['instagram_url']); ?>" target="_blank"><i class="fab fa-instagram"></i></a></li>
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($site_settings['linkedin_url'])): ?>
-                            <li><a href="<?php echo htmlspecialchars($site_settings['linkedin_url']); ?>" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
-                            <?php endif; ?>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-        
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container">
                 <a class="navbar-brand" href="index.php">
-                    <img src="images/logo.png" alt="<?php echo htmlspecialchars($site_settings['site_name']); ?>" class="logo">
+                    <?php if(!empty($site_settings['logo_path'])): ?>
+                        <img src="images/<?php echo htmlspecialchars($site_settings['logo_path']); ?>" alt="<?php echo htmlspecialchars($site_settings['site_name']); ?>" class="logo">
+                    <?php else: ?>
+                        <?php echo htmlspecialchars($site_settings['site_name']); ?>
+                    <?php endif; ?>
                 </a>
-                 <div class="ml-auto d-none d-lg-block">
-                      <div class="ml-auto d-none d-lg-block">
+                <div class="ml-auto d-none d-lg-block">
                     <a href="contact.php" class="btn btn-sm btn-primary">Let's Talk</a>
                 </div>
             </div>
@@ -440,24 +398,6 @@ $menu_items = $stmt->fetchAll();
             existingToggles.forEach(toggle => {
                 toggle.parentNode.removeChild(toggle);
             });
-            
-            // Setup intersection observer for footer
-            const footerObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    const fixedSocialLinks = document.getElementById('fixed-social-links');
-                    if (fixedSocialLinks && entry.isIntersecting) {
-                        fixedSocialLinks.classList.add('hide-social');
-                    } else if (fixedSocialLinks) {
-                        fixedSocialLinks.classList.remove('hide-social');
-                    }
-                });
-            }, { threshold: 0.1 });
-            
-            // Observe the footer when it exists
-            const footer = document.querySelector('footer');
-            if (footer) {
-                footerObserver.observe(footer);
-            }
         });
         
         function toggleSidebar() {

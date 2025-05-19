@@ -458,9 +458,7 @@ if ($has_category_id) {
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 font-weight-bold text-primary">All Blog Posts</h6>
-                            <a href="blog-posts.php?add=1" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus fa-sm"></i> Add New Post
-                            </a>
+                           
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
